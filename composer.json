@@ -1,0 +1,18 @@
+{
+  "name": "bjb/qrismpm-sdk",
+  "description": "BJB QRIS MPM PHP SDK — SNAP BI standard integration for QRIS Merchant Presented Mode payments",
+  "type": "library",
+  "license": "MIT",
+  "keywords": ["bjb", "qris", "mpm", "snap-bi", "payment", "sdk"],
+  "require": {
+    "php": ">=8.0",
+    "ext-json": "*",
+    "ext-openssl": "*"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bjb\\QrisMpm\\": "src/"
+    }
+  },
+  "minimum-stability": "stable"
+}
