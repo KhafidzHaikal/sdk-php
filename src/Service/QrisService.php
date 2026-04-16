@@ -33,13 +33,11 @@ class QrisService
     {
         $accessToken = $this->auth->getAccessToken($requestId);
         $timestamp = (new \DateTimeImmutable('now', new \DateTimeZone('+07:00')))->format('Y-m-d\TH:i:sP');
-        $body = json_encode($payload);
+        $body = json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         $signature = HmacSigner::sign('POST', $path, $accessToken, $body, $timestamp, $this->config->clientSecret);
         $externalId = bin2hex(random_bytes(10));
 
         $url = rtrim($this->config->baseUrl, '/') . $path;
-
-        $this->log($requestId, 'SNAP_API', 'REQUEST', "url={$url}");
 
         $headers = [
             'Content-Type' => 'application/json',
@@ -52,9 +50,14 @@ class QrisService
             'ORIGIN' => 'www.bankbjb.co.id',
         ];
 
+        $this->log($requestId, 'SNAP_API', 'REQUEST', "url={$url}");
+        $this->log($requestId, 'SNAP_API', 'REQUEST_HEADERS', json_encode($headers));
+        $this->log($requestId, 'SNAP_API', 'REQUEST_BODY', $body);
+
         $data = $this->http->post($url, $headers, $body);
 
-        $this->log($requestId, 'SNAP_API', 'RESPONSE', "responseCode={$data['responseCode']}");
+        $this->log($requestId, 'SNAP_API', 'RESPONSE', 'responseCode=' . ($data['responseCode'] ?? 'null'));
+        $this->log($requestId, 'SNAP_API', 'RESPONSE_BODY', json_encode($data));
 
         if (isset($data['responseCode']) && !str_starts_with($data['responseCode'], '2')) {
             throw new ApiException($data['responseCode'], $data['responseMessage'] ?? 'API Error');

@@ -30,9 +30,14 @@ class AuthService
         ];
 
         $body = json_encode(['grantType' => 'client_credentials']);
+
+        $this->log($requestId, 'TOKEN', 'REQUEST_HEADERS', json_encode($headers));
+        $this->log($requestId, 'TOKEN', 'REQUEST_BODY', $body);
+
         $data = $this->http->post($url, $headers, $body);
 
         $this->log($requestId, 'TOKEN', 'RESPONSE', "responseCode={$data['responseCode']}");
+        $this->log($requestId, 'TOKEN', 'RESPONSE_BODY', json_encode($data));
 
         if (($data['responseCode'] ?? '') !== '2007300') {
             throw new ApiException($data['responseCode'] ?? 'unknown', $data['responseMessage'] ?? 'Token request failed');
